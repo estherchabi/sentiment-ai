@@ -27,8 +27,9 @@ pipeline {
         stage('Lint') {
             steps {
                 sh '''
-                    pip install flake8 -q --break-system-packages
-                    flake8 src/ --max-line-length=100
+                    apt-get update -q && apt-get install -y python3-pip -q
+                    python3 -m pip install flake8 -q
+                    python3 -m flake8 src/ --max-line-length=100
                 '''
             }
         }
