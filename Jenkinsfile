@@ -73,14 +73,15 @@ pipeline {
                     sh '''
                         docker run --rm \
                             --network cicd-network \
-                            -v "$(pwd):/usr/src" \
+                            --volumes-from jenkins \
+                            -w "$WORKSPACE" \
                             -e SONAR_HOST_URL="$SONAR_HOST_URL" \
                             -e SONAR_TOKEN="$SONAR_AUTH_TOKEN" \
                             sonarsource/sonar-scanner-cli:latest \
                             sonar-scanner \
-                            -Dsonar.projectBaseDir=/usr/src \
                             -Dsonar.projectKey=sentiment-ai \
                             -Dsonar.projectName=SentimentAI \
+                            -Dsonar.projectBaseDir="$WORKSPACE" \
                             -Dsonar.sources=src \
                             -Dsonar.python.version=3.11 \
                             -Dsonar.python.coverage.reportPaths=coverage.xml \
@@ -89,6 +90,10 @@ pipeline {
                 }
             }
         }
+
+
+
+
         stage('Quality Gate') {
             steps {
                 // Attendre le résultat du Quality Gate SonarQube (max 5 min)
