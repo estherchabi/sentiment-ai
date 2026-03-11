@@ -67,7 +67,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+       stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh '''
@@ -76,7 +76,7 @@ pipeline {
                             --volumes-from jenkins \
                             -w "$WORKSPACE" \
                             -e SONAR_HOST_URL="$SONAR_HOST_URL" \
-                            -e SONAR_TOKEN="$SONAR_AUTH_TOKEN" \
+                            -e SONAR_TOKEN="$SONAR_TOKEN" \
                             sonarsource/sonar-scanner-cli:latest \
                             sonar-scanner \
                             -Dsonar.projectKey=sentiment-ai \
@@ -85,13 +85,12 @@ pipeline {
                             -Dsonar.sources=src \
                             -Dsonar.python.version=3.11 \
                             -Dsonar.python.coverage.reportPaths=coverage.xml \
-                            -Dsonar.sourceEncoding=UTF-8
+                            -Dsonar.sourceEncoding=UTF-8 \
+                            -Dsonar.scanner.metadataFilePath=report-task.txt
                     '''
                 }
             }
         }
-
-
 
 
         stage('Quality Gate') {
@@ -102,10 +101,6 @@ pipeline {
                 }
             }
         }
-
-
-
-
 
 
 
