@@ -68,6 +68,9 @@ pipeline {
         }
 
        stage('SonarQube Analysis') {
+            environment {
+                SONARQUBE_TOKEN = credentials('sonarqube-token')
+            }
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh '''
@@ -76,7 +79,7 @@ pipeline {
                             --volumes-from jenkins \
                             -w "$WORKSPACE" \
                             -e SONAR_HOST_URL="$SONAR_HOST_URL" \
-                            -e SONAR_TOKEN="$SONAR_TOKEN" \
+                            -e SONAR_TOKEN="$SONARQUBE_TOKEN" \
                             sonarsource/sonar-scanner-cli:latest \
                             sonar-scanner \
                             -Dsonar.projectKey=sentiment-ai \
