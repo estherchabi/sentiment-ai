@@ -36,20 +36,16 @@ pipeline {
         stage('Build & Test') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
- 
-                // Générer le rapport de couverture en XML pour SonarQube
-                sh '''
+
+                sh """
                     docker run --rm \
-                        -v $(pwd):/app \
-                        -w /app \
                         -e CI=true \
-                        ''' + "${IMAGE_NAME}:${IMAGE_TAG}" + ''' \
+                        ${IMAGE_NAME}:${IMAGE_TAG} \
                         pytest tests/ -v \
-                            --cov=src \
-                            --cov-report=xml:coverage.xml \
-                            --cov-report=term-missing \
-                            --cov-fail-under=70
-                '''
+                        --cov=src \
+                        --cov-report=term-missing \
+                        --cov-fail-under=70
+                """
             }
             post {
                 failure {
@@ -57,39 +53,6 @@ pipeline {
                 }
             }
         }
-
-        stage('SonarQube Analysis') {
-            steps {
-                // withSonarQubeEnv injecte les variables de connexion au serveur
-                withSonarQubeEnv('sonarqube') {
-                    sh '''
-                        docker run --rm \
-                            --network cicd-network \
-                            -v $(pwd):/usr/src \
-                            -e SONAR_HOST_URL=$SONAR_HOST_URL \
-                            -e SONAR_TOKEN=$SONAR_AUTH_TOKEN \
-                            sonarsource/sonar-scanner-cli:latest \
-                            sonar-scanner \
-                                -Dsonar.projectBaseDir=/usr/src
-                    '''
-                }
-            }
-        }
- 
-        stage('Quality Gate') {
-            steps {
-                // Attendre le résultat du Quality Gate SonarQube (max 5 min)
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-
-
-
-
-
 
         stage('Push') {
             when {
