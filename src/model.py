@@ -1,6 +1,3 @@
-from typing import Any
-
-
 class SentimentModel:
 
     def __init__(self):
@@ -17,3 +14,4 @@ class SentimentModel:
             label, score = "NEUTRAL", 0.61
 
         return {"label": label, "score": score, "text": text}
+    
