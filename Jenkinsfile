@@ -37,8 +37,13 @@ pipeline {
             steps {
                 sh '''
                     docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+
+                    docker rm -f test-runner 2>/dev/null || true
+
+                    set +e
                     docker run \
                         -e CI=true \
+                        -e COVERAGE_FILE=/tmp/.coverage \
                         --name test-runner \
                         ${IMAGE_NAME}:${IMAGE_TAG} \
                         pytest tests/ -v \
@@ -46,8 +51,13 @@ pipeline {
                             --cov-report=xml:/tmp/coverage.xml \
                             --cov-report=term-missing \
                             --cov-fail-under=70
-                    docker cp test-runner:/tmp/coverage.xml ./coverage.xml
-                    docker rm test-runner
+                    TEST_EXIT_CODE=$?
+                    set -e
+
+                    docker cp test-runner:/tmp/coverage.xml ./coverage.xml 2>/dev/null || true
+                    docker rm -f test-runner 2>/dev/null || true
+
+                    exit $TEST_EXIT_CODE
                 '''
             }
             post {
