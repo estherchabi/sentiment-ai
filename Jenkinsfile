@@ -72,6 +72,7 @@ pipeline {
                 withSonarQubeEnv('sonarqube') {
                     sh """
                         docker run --rm \\
+                            --platform linux/arm64 \\
                             --network cicd-network \\
                             -v ${WORKSPACE}:/usr/src \\
                             -e SONAR_HOST_URL=\$SONAR_HOST_URL \\
@@ -81,9 +82,9 @@ pipeline {
                                 -Dsonar.projectBaseDir=/usr/src \\
                                 -Dsonar.projectKey=sentiment-ai \\
                                 -Dsonar.projectName=SentimentAI \\
-                                -Dsonar.sources=/usr/src/src \\
+                                -Dsonar.sources=src \\
                                 -Dsonar.python.version=3.11 \\
-                                -Dsonar.python.coverage.reportPaths=/usr/src/coverage.xml \\
+                                -Dsonar.python.coverage.reportPaths=coverage.xml \\
                                 -Dsonar.sourceEncoding=UTF-8
                     """
                 }
