@@ -79,7 +79,7 @@ pipeline {
                             -e SONAR_TOKEN=$SONAR_AUTH_TOKEN \
                             sonarsource/sonar-scanner-cli:latest \
                             sonar-scanner \
-                                -Dsonar.projectBaseDir=/usr/src
+                                -Dsonar.projectBaseDir=/usr
                     '''
                 }
             }
