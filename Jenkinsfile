@@ -98,8 +98,7 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                // Attendre le résultat du Quality Gate SonarQube (max 5 min)
-                timeout(time: 5, unit: 'MINUTES') {
+                timeout(time: 15, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
@@ -140,7 +139,7 @@ pipeline {
             echo 'Pipeline échoué. Consultez les logs ci-dessus.'
         }
         always {
-            sh 'docker compose down -v 2>/dev/null || true'
+            sh 'docker rm -f test-runner 2>/dev/null || true'
         }
     }
 }
