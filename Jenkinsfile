@@ -35,20 +35,19 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
- 
-                // Générer le rapport de couverture en XML pour SonarQube
                 sh '''
-                    docker run --rm \
-                        -v $(pwd):/app \
-                        -w /app \
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                    docker run \
                         -e CI=true \
-                        ''' + "${IMAGE_NAME}:${IMAGE_TAG}" + ''' \
+                        --name test-runner \
+                        ${IMAGE_NAME}:${IMAGE_TAG} \
                         pytest tests/ -v \
                             --cov=src \
-                            --cov-report=xml:coverage.xml \
+                            --cov-report=xml:/tmp/coverage.xml \
                             --cov-report=term-missing \
                             --cov-fail-under=70
+                    docker cp test-runner:/tmp/coverage.xml ./coverage.xml
+                    docker rm test-runner
                 '''
             }
             post {
