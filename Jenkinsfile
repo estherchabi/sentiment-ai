@@ -69,19 +69,23 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // withSonarQubeEnv injecte les variables de connexion au serveur
-                withSonarQubeEnv('sonarqube') {
-                    sh '''
-                        docker run --rm \
-                            --network cicd-network \
-                            -v $(pwd):/usr/src \
-                            -e SONAR_HOST_URL=$SONAR_HOST_URL \
-                            -e SONAR_TOKEN=$SONAR_AUTH_TOKEN \
-                            sonarsource/sonar-scanner-cli:latest \
-                            sonar-scanner \
-                                -Dsonar.projectBaseDir=/usr
-                    '''
-                }
+                sh '''
+                    docker run --rm \
+                        --network cicd-network \
+                        -v $(pwd):/usr/src \
+                        -e SONAR_HOST_URL=$SONAR_HOST_URL \
+                        -e SONAR_TOKEN=$SONAR_AUTH_TOKEN \
+                        sonarsource/sonar-scanner-cli:latest \
+                        sonar-scanner \
+                            -Dsonar.projectBaseDir=/usr/src \
+                            -Dsonar.projectKey=sentiment-ai \
+                            -Dsonar.projectName=SentimentAI \
+                            -Dsonar.sources=src \
+                            -Dsonar.tests=tests \
+                            -Dsonar.python.version=3.11 \
+                            -Dsonar.python.coverage.reportPaths=coverage.xml \
+                            -Dsonar.sourceEncoding=UTF-8
+                '''
             }
         }
  
