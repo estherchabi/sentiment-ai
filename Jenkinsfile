@@ -106,6 +106,30 @@ pipeline {
 
 
 
+        stage('Security Scan') {
+            steps {
+                // Scanner l'image construite avec Trivy
+                // --exit-code 1 : fail si des CVE CRITICAL sont trouvées
+                sh '''
+                    docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v trivy-cache:/root/.cache/trivy \
+                        aquasec/trivy:latest image \
+                        --severity HIGH,CRITICAL \
+                        --exit-code 1 \
+                        --format table \
+                        ''' + "${IMAGE_NAME}:${IMAGE_TAG}" + '''
+                '''
+            }
+            post {
+                failure {
+                    echo 'Vulnerabilites CRITICAL ou HIGH detectees ! Corrigez avant de deployer.'
+                }
+            }
+        }
+
+
+
         stage('Push') {
             when {
                 expression { env.GIT_BRANCH == 'origin/main' || env.BRANCH_NAME == 'main' }
