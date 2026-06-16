@@ -28,11 +28,11 @@ pipeline {
       steps {
         // Lancer flake8 dans un conteneur Python temporaire
         // --rm supprime le conteneur automatiquement après l'exécution
-        sh '''
+        sh ''
           docker run --rm \
-            -v $WORKSPACE:/app \
-            -w /app \
-            python:3.11-slim \
+            --volumes-from jenkins \
+            -v $WORKSPACE \
+            python:3.12-slim \
             sh -c "pip install flake8 -q && flake8 src/ --max-line-length=100"
         '''
       }
