@@ -19,7 +19,7 @@ class SentimentModel:
             return {"label": "POSITIVE", "score": round(0.6 + 0.1 * pos, 2),
                     "text": text}
         elif neg > pos:
-            return {"label": "NEGATIVE", "score": round(0.6 + 0.1 * neg, 2), 
+            return {"label": "NEGATIVE", "score": round(0.6 + 0.1 * neg, 2),
                     "text": text}
 
         return {"label": "NEUTRAL", "score": 0.5, "text": text}
