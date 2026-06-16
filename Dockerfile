@@ -1,4 +1,8 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
+
+# Installer curl pour le healthcheck Docker
+RUN apt-get update && apt-get install -y curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
