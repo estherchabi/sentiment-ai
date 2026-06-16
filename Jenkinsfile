@@ -30,7 +30,7 @@ pipeline {
         // --rm supprime le conteneur automatiquement après l'exécution
         sh '''
           docker run --rm \
-            -v $(pwd):/app \
+            -v $WORKSPACE:/app \
             -w /app \
             python:3.11-slim \
             sh -c "pip install flake8 -q && flake8 src/ --max-line-length=100"
